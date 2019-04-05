@@ -6,6 +6,8 @@
 package ca.sheridancollege.project;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -26,6 +28,7 @@ public class Game {
     public Game(String givenName) {
         gameName = givenName;
         players = new ArrayList();
+        Collections.shuffle(DECK);
     }
 
     public static void main(String[] args) {
@@ -103,7 +106,7 @@ public class Game {
         for (Player player : players) {
             player.makeMatches();
             System.out.println(player.getPlayerID() + " you have " + 
-                    player.getMatches());
+                    player.getMatches() + " matches.");
         }
     }
 
