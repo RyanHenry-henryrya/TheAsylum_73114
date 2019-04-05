@@ -15,11 +15,11 @@ import java.util.Scanner;
  *
  * @author dancye, 2018
  */
-public abstract class Game {
+public class Game {
 
     private final String gameName;//the title of the game
     private static ArrayList<Player> players = new ArrayList();
-    private Deck deck;// the players of the game
+    private static final Deck DECK = Deck.getInstance();// the players of the game
     private static int numPlayers;
     private static Scanner in = new Scanner(System.in);
     
@@ -36,6 +36,7 @@ public abstract class Game {
             // a method that starts the game
             createPlayers();
             System.out.println("Game play here");
+            
         } else {
             System.out.println("Ok bye.");
             System.exit(0);
@@ -71,6 +72,9 @@ public abstract class Game {
         return numPlayers;
     }
     
+    /**
+     * 
+     */
     private static void createPlayers(){
         int n = getNumPlayers();
         System.out.println("Play order is according to name entry order.");
@@ -83,10 +87,11 @@ public abstract class Game {
                 try{
                     for (Player player : players) {
                         if (player.getPlayerID().equals(newName)){
-                            throw new IllegalArgumentException("Name taken, try again.");
+                            throw new IllegalArgumentException("Name taken, try "
+                                    + "again.");
                         }
                     } 
-                    players.add(new Player(newName));
+                    players.add(new Player(newName, DECK));
                     check = false;
                 } catch (IllegalArgumentException ex){
                     System.out.println(ex.getMessage());
@@ -120,13 +125,15 @@ public abstract class Game {
      * Play the game. This might be one method or many method calls depending on
      * your game.
      */
-    public abstract void play();
+    public void play(){
+        
+    }
 
     /**
      * When the game is over, use this method to declare and display a winning
      * player.
      */
-    public abstract void declareWinner();
+    public void declareWinner(){}
 
     public void showRules() {
         // TODO - implement Game.showRules
