@@ -18,7 +18,7 @@ import java.util.Scanner;
 public abstract class Game {
 
     private final String gameName;//the title of the game
-    private static ArrayList<Player> players;
+    private static ArrayList<Player> players = new ArrayList();
     private Deck deck;// the players of the game
     private static int numPlayers;
     private static Scanner in = new Scanner(System.in);
@@ -72,11 +72,13 @@ public abstract class Game {
     }
     
     private static void createPlayers(){
-        for (int i = 0; i < getNumPlayers(); i++){
+        int n = getNumPlayers();
+        System.out.println("Play order is according to name entry order.");
+        for (int i = 0; i < n; i++){
             boolean check = true;
             do {
-                System.out.print("Please enter your player name: ");
-                String newName = in.next();
+                System.out.println("Please enter your player name: ");
+                String newName = in.nextLine();
                 try{
                     for (Player player : players) {
                         if (player.getPlayerID().equals(newName)){
