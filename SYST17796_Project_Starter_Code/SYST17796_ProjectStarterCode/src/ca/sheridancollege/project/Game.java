@@ -31,6 +31,8 @@ public class Game {
     public static void main(String[] args) {
         
         System.out.println("Welcome to Go Fish by the Asylum.");
+        System.out.println("Each player starts with 4 cards.");
+        System.out.println("A match is four cards of the same value.");
         System.out.println("Would you like to start a new game? [Y]");
         if (in.nextLine().equalsIgnoreCase("y")) {
             // a method that starts the game
@@ -97,6 +99,11 @@ public class Game {
                     System.out.println(ex.getMessage());
                 }
             } while (check);
+        }
+        for (Player player : players) {
+            player.makeMatches();
+            System.out.println(player.getPlayerID() + " you have " + 
+                    player.getMatches());
         }
     }
 
