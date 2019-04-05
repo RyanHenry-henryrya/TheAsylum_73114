@@ -74,11 +74,12 @@ public abstract class Game {
     private static void createPlayers(){
         int n = getNumPlayers();
         System.out.println("Play order is according to name entry order.");
+        System.out.println("Player names must be one word.");
         for (int i = 0; i < n; i++){
             boolean check = true;
             do {
-                System.out.println("Please enter your player name: ");
-                String newName = in.nextLine();
+                System.out.print((i+1) + ". Please enter your player name: ");
+                String newName = in.next();
                 try{
                     for (Player player : players) {
                         if (player.getPlayerID().equals(newName)){
