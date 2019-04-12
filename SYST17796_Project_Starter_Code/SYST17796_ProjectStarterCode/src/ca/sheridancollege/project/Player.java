@@ -5,44 +5,119 @@
  */
 package ca.sheridancollege.project;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
- * A class that models each Player in the game. Players have an identifier, which should be unique.
+ * A class that models each Player in the game. Players have an identifier,
+ * which should be unique.
+ *
  * @author dancye, 2018
  */
-public abstract class Player 
-{
-    private String playerID; //the unique ID for this player
-    
+public class Player {
+
+    private final String playerID;
+    private final CardHand playerHand; //the unique ID for this player
+    private int matches;
+
     /**
      * A constructor that allows you to set the player's unique ID
+     *
      * @param name the unique ID to assign to this player.
+     * @param DECK
      */
-    public Player(String name)
-    {
-        playerID= name;
-    }
-    
-    /**
-     * @return the playerID
-     */
-    public String getPlayerID() 
-    {
-        return playerID;
+    public Player(String name, Deck DECK) {
+        playerID = name;
+        playerHand = new CardHand(DECK);
+        matches = 0;
     }
 
     /**
-     * Ensure that the playerID is unique
-     * @param givenID the playerID to set
+     * @return the playerID
      */
-    public void setPlayerID(String givenID) 
-    {
-        playerID = givenID;
+    public String getPlayerID() {
+        return playerID;
+    }
+
+    public void drawCard() {
+        playerHand.drawCard();
+    }
+
+    public void askGoFishQuestion(Player otherPlayer) {
+        ArrayList<Card> n = new ArrayList<Card>();
     }
     
-    /**
-     * The method to be instantiated when you subclass the Player class
-     * with your specific type of Player and filled in with logic to play your game.
-     */
-    public abstract void play();
+    public void makeMatches(){
+        /*
+        playerHand.contains(new Card(Values.valueOf(String.valueOf()),Suits.valueOf(playerID))));
+        for (int i = 0; i < playerHand.size(); i++){
+            int x = playerHand.get(i).getValue().ordinal();
+            int count = 0;
+            for (int j = 0; j < playerHand.size(); j++){
+                if (playerHand.get(j).getValue().ordinal() == x){
+                    count++;
+                }
+            }
+            if (count == 4){
+                for(int k = 0; k < playerHand.size(); k++){
+                    if (playerHand.get(k).getValue().ordinal() == x){
+                        playerHand.remove(playerHand.get(k));
+                    }
+                }
+            }
+        }
+        */
+        /*
+        System.out.println("This is " + getPlayerID() + "'s CardHand:");
+        for (Card card : playerHand) {
+            System.out.print(card);
+        }*/
+        Suits[] suits = Suits.values();
+        Values[] values = Values.values();
+        ArrayList<Card> match = new ArrayList<>();
+        System.out.println(playerHand);
+        for (Values value : values) {
+            for (Suits suit : suits) {
+                if (playerHand.contains(new Card(value, suit)))
+                    System.out.println("contains works");
+                match.add(new Card(value,suit));
+            }
+            //System.out.println(match);
+            if (playerHand.contains(match)){
+                System.out.println("match!");
+                matches++;
+                for (Suits suit : suits) {
+                    playerHand.remove(new Card(value,suit));
+                }
+            }
+            
+            match.clear();
+            
+            
+            for (Card card : playerHand) {
+                //if (playerHand.subList(playerHand.indexOf(card), playerHand.));
+            }
+            
+            for (Card card : playerHand) {
+                
+            }
+        }
+        
+        //System.out.println(match);
+        
+        /*
+        new approach:
+        create a list of 
+        */
+        
+    }//enum .values(), .equals()
     
+    public void match(){
+        Card[] hand = (Card[]) playerHand.toArray();
+        
+    }
+
+    public int getMatches() {
+        return matches;
+    }
 }
