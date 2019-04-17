@@ -21,12 +21,13 @@ public class Game {
     private static Deck DECK;
     private static int numPlayers;
     private static Scanner in;
-    
+    private static ArrayList<String> playerNames;
+    private static boolean check, validcheck, valid;
 
     public Game() {
         players = new ArrayList();
         DECK = Deck.getInstance();
-        
+
         //Collections.shuffle(DECK);
     }
 
@@ -49,7 +50,7 @@ public class Game {
     }
 
     private static int getNumPlayers() {
-        boolean check = true;
+        boolean ok = true;
         do {
             try {
                 System.out.print("Please enter the number of players (2-6): ");
@@ -68,12 +69,12 @@ public class Game {
 
                 // if the above code executes without errors exit the 
                 // player number loop and go to game play
-                check = false;
+                ok = false;
             } catch (InputMismatchException | NumberFormatException ex) {
                 System.out.println(ex.getMessage());
             }
 
-        } while (check);
+        } while (ok);
         return numPlayers;
     }
 
@@ -88,12 +89,12 @@ public class Game {
         System.out.println("For example: 'name1 name2 name3' would be three "
                 + "different player names");
         for (int i = 0; i < n; i++) {
-            boolean check = true;
+            check = true;
             do {
                 System.out.print((i + 1) + ". Please enter your player name: ");
                 String newName = in.next();
                 try {
-                    if (newName.contains(" ")){
+                    if (newName.contains(" ")) {
                         throw new IllegalArgumentException("Invalid name, try "
                                 + "again.");
                     }
@@ -129,6 +130,121 @@ public class Game {
         this.players = players;
     }
 
+    public static void drawCards(Player player) {
+        player.makeMatches();
+        System.out.println(player.getPlayerID() + ", it is your turn."
+                + " You have " + player.getMatches() + " matches.");
+        if (player.getCardHand().isEmpty()) {
+            if (DECK.size() < 7) {
+                for (int i = 0; i < DECK.size(); i++) {
+                    player.drawCard();
+                }
+                System.out.println("You drew " + DECK.size() + " cards."
+                );
+                System.out.println("That was the last of the deck.");
+            } else {
+                for (int i = 0; i < 7; i++) {
+                    player.drawCard();
+                }
+                System.out.println("You drew 7 cards.");
+            }
+        } else if (player.getCardHand().size() < 7) {
+            for (int i = 0; i < 7 - player.getCardHand().size(); i++) {
+                player.drawCard();
+            }
+            System.out.println("You drew " + (7 - player.getCardHand()
+                    .size()) + " cards.");
+        }
+    }
+
+    public static void transferCards(Player player, String inputName) {
+        validcheck = true;
+        do {
+            System.out.println("Which card would you like to"
+                    + " ask " + inputName + " for?");
+            System.out.print("For example: 'sevens'.\n>");
+            String inputValue = in.next();
+            if (Values.getValueNames().contains(inputValue)) {
+                ArrayList<Card> transferCards = players.get(
+                        playerNames.indexOf(inputName))
+                        .hasCard(Values
+                                .getValueOf(inputValue));
+                if (transferCards.size() > 0) {
+                    System.out.println(inputName + " has "
+                            + "your card.");
+                    player.giveCards(transferCards);
+                    System.out.println(player.getPlayerID()
+                            + ", you recieved: ");
+                    for (Card transferCard : transferCards) {
+                        System.out.println(transferCard);
+                    }
+                    player.makeMatches();
+                    System.out.println("You have " + player
+                            .getMatches() + " matches.");
+                    System.out.println(player.getPlayerID()
+                            + ", here are your cards now:");
+                    player.printCardHand();
+                    validcheck = false;
+                    check = false;
+                } else {
+                    System.out.println("Go Fish.");
+                    validcheck = false;
+                    check = false;
+                    valid = false;
+                }
+                //the chosen player gives the current player 
+                //their cards
+            } else {
+                System.out.println("Invalid card value.");
+            }
+        } while (validcheck);
+    }
+
+    public static void checkPlayer(Player player, String inputName) {
+        check = true;
+        do {
+            if (inputName.equals(player.getPlayerID())) {
+                System.out.println("You can't ask yourself.");
+                check = false;
+            } else if (playerNames.contains(inputName)) {
+                System.out.println(player.getPlayerID()
+                        + ", here are your cards:");
+                player.printCardHand();
+                transferCards(player, inputName);
+            } else {
+                //infinite loop here
+                System.out.println("Invalid name.");
+                check = false;
+            }
+        } while (check);
+    }
+
+    public static void askOtherPlayer(Player player) {
+        playerNames = new ArrayList<>();
+        for (Player player1 : players) {
+            playerNames.add(player1.getPlayerID());
+        }
+        if (players.size() == 2) {
+            checkPlayer(player, playerNames.get((players.indexOf(player)+1)%2));
+        } else {
+            String inputName;
+            valid = true;
+            do {
+                System.out.println("Which player would you like to ask for "
+                        + "cards?");
+                for (String playerName : playerNames) {
+                    if (!playerName.equals(player.getPlayerID())){
+                        System.out.println(playerName);
+                    }
+                }
+                System.out.print(">");
+                inputName = in.next();
+                checkPlayer(player, inputName);
+            } while (valid);
+        }
+
+    }
+
     /**
      * Play the game. This might be one method or many method calls depending on
      * your game.
@@ -136,101 +252,8 @@ public class Game {
     public static void play() {
         while (DECK.size() > 0) {
             for (Player player : players) {
-                player.makeMatches();
-                System.out.println(player.getPlayerID() + ", it is your turn."
-                        + " You have " + player.getMatches() + " matches.");
-                if (player.getCardHand().isEmpty()) {
-                    if (DECK.size() < 7) {
-                        for (int i = 0; i < DECK.size(); i++) {
-                            player.drawCard();
-                        }
-                        System.out.println("You drew " + DECK.size() + " cards."
-                        );
-                        System.out.println("That was the last of the deck.");
-                    } else {
-                        for (int i = 0; i < 7; i++) {
-                            player.drawCard();
-                        }
-                        System.out.println("You drew 7 cards.");
-                    }
-                } else if (player.getCardHand().size() < 7) {
-                    for (int i = 0; i < 7 - player.getCardHand().size(); i++) {
-                        player.drawCard();
-                    }
-                    System.out.println("You drew " + (7 - player.getCardHand()
-                            .size()) + " cards.");
-                }
-                String inputName;
-                boolean valid = true;
-                do {
-                    System.out.println("Which player would you like to ask for "
-                            + "cards?");
-                    ArrayList<String> playerNames = new ArrayList<>();
-                    for (Player player1 : players) {
-                        if (!player1.getPlayerID().equals(player.getPlayerID())) 
-                        {
-                            System.out.println(player1.getPlayerID());
-                        }
-                        playerNames.add(player1.getPlayerID());
-                    }
-                    System.out.print(">");
-                    boolean check = true;
-                    inputName = in.next();
-                    do {
-                        boolean validcheck = true;
-                        if (inputName.equals(player.getPlayerID())) {
-                            System.out.println("You can't ask yourself.");
-                            check = false;
-                        } else if (playerNames.contains(inputName)) {
-                            System.out.println(player.getPlayerID()
-                                    + ", here are your cards:");
-                            player.printCardHand();
-                            do {
-                                System.out.println("Which card would you like to"
-                                        + " ask " + inputName + " for?");
-                                System.out.print("For example: 'sevens'.\n>");
-                                String inputValue = in.next();
-                                if (Values.getValueNames().contains(inputValue)) {
-                                    ArrayList<Card> transferCards = players.get(
-                                            playerNames.indexOf(inputName))
-                                            .hasCard(Values
-                                                    .getValueOf(inputValue));
-                                    if (transferCards.size() > 0) {
-                                        System.out.println(inputName + " has "
-                                                + "your card.");
-                                        player.giveCards(transferCards);
-                                        System.out.println(player.getPlayerID()
-                                                + ", you recieved: ");
-                                        for (Card transferCard : transferCards) {
-                                            System.out.println(transferCard);
-                                        }
-                                        player.makeMatches();
-                                        System.out.println("You have " + player
-                                                .getMatches() + " matches.");
-                                        System.out.println(player.getPlayerID()
-                                                + ", here are your cards now:");
-                                        player.printCardHand();
-                                        validcheck = false;
-                                        check = false;
-                                    } else {
-                                        System.out.println("Go Fish.");
-                                        validcheck = false;
-                                        check = false;
-                                        valid = false;
-                                    }
-                                    //the chosen player gives the current player 
-                                    //their cards
-                                } else {
-                                    System.out.println("Invalid card value.");
-                                }
-                            } while (validcheck);
-                        } else {
-                            //infinite loop here
-                            System.out.println("Invalid name.");
-                            check = false;
-                        }
-                    } while (check);
-                } while (valid);
+                drawCards(player);
+                askOtherPlayer(player);
             }
         }
         declareWinner();
@@ -253,7 +276,6 @@ public class Game {
     }
 
     public void showRules() {
-        // TODO - implement Game.showRules
         throw new UnsupportedOperationException();
     }
 
