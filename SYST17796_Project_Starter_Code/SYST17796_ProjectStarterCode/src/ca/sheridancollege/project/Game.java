@@ -27,8 +27,6 @@ public class Game {
     public Game() {
         players = new ArrayList();
         DECK = Deck.getInstance();
-
-        //Collections.shuffle(DECK);
     }
 
     public static void main(String[] args) {
@@ -66,14 +64,10 @@ public class Game {
                         throw new NumberFormatException("2-6 players only.");
                     }
                 }
-
-                // if the above code executes without errors exit the 
-                // player number loop and go to game play
                 ok = false;
             } catch (InputMismatchException | NumberFormatException ex) {
                 System.out.println(ex.getMessage());
             }
-
         } while (ok);
         return numPlayers;
     }
@@ -113,6 +107,7 @@ public class Game {
         }
         for (Player player : players) {
             player.makeMatches();
+            player.getCardHand().sort(null);
         }
     }
 
@@ -132,6 +127,7 @@ public class Game {
 
     public static void drawCards(Player player) {
         player.makeMatches();
+        player.getCardHand().sort(null);
         System.out.println(player.getPlayerID() + ", it is your turn."
                 + " You have " + player.getMatches() + " matches.");
         if (player.getCardHand().isEmpty()) {
@@ -179,11 +175,9 @@ public class Game {
                         System.out.println(transferCard);
                     }
                     player.makeMatches();
+                    player.getCardHand().sort(null);
                     System.out.println("You have " + player
                             .getMatches() + " matches.");
-                    System.out.println(player.getPlayerID()
-                            + ", here are your cards now:");
-                    player.printCardHand();
                     validcheck = false;
                     check = false;
                 } else {
@@ -192,8 +186,6 @@ public class Game {
                     check = false;
                     valid = false;
                 }
-                //the chosen player gives the current player 
-                //their cards
             } else {
                 System.out.println("Invalid card value.");
             }
@@ -220,29 +212,29 @@ public class Game {
     }
 
     public static void askOtherPlayer(Player player) {
-        playerNames = new ArrayList<>();
-        for (Player player1 : players) {
-            playerNames.add(player1.getPlayerID());
-        }
-        if (players.size() == 2) {
-            checkPlayer(player, playerNames.get((players.indexOf(player)+1)%2));
-        } else {
-            String inputName;
-            valid = true;
-            do {
+        String inputName;
+        valid = true;
+        do {
+            playerNames = new ArrayList<>();
+            for (Player player1 : players) {
+                playerNames.add(player1.getPlayerID());
+            }
+            if (players.size() == 2) {
+                checkPlayer(player, playerNames.get((players.indexOf(player) + 
+                        1) % 2));
+            } else {
                 System.out.println("Which player would you like to ask for "
                         + "cards?");
                 for (String playerName : playerNames) {
-                    if (!playerName.equals(player.getPlayerID())){
+                    if (!playerName.equals(player.getPlayerID())) {
                         System.out.println(playerName);
                     }
                 }
                 System.out.print(">");
                 inputName = in.next();
                 checkPlayer(player, inputName);
-            } while (valid);
-        }
-
+            }
+        }while (valid);
     }
 
     /**
@@ -275,8 +267,4 @@ public class Game {
         System.out.println(winner.getPlayerID() + " is the winner!");
     }
 
-    public void showRules() {
-        throw new UnsupportedOperationException();
-    }
-
-}//end class
+}
