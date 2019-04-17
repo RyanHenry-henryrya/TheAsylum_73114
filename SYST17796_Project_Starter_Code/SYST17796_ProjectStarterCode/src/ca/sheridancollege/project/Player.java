@@ -17,8 +17,9 @@ import java.util.Collection;
 public class Player {
 
     private final String playerID;
-    private final CardHand playerHand; //the unique ID for this player
+    private final CardHand cardHand; //the unique ID for this player
     private int matches;
+    private int[] values;
 
     /**
      * A constructor that allows you to set the player's unique ID
@@ -28,8 +29,12 @@ public class Player {
      */
     public Player(String name, Deck DECK) {
         playerID = name;
-        playerHand = new CardHand(DECK);
+        cardHand = new CardHand(DECK);
         matches = 0;
+    }
+
+    public CardHand getCardHand() {
+        return cardHand;
     }
 
     /**
@@ -40,84 +45,59 @@ public class Player {
     }
 
     public void drawCard() {
-        playerHand.drawCard();
+        cardHand.drawCard();
     }
 
     public void askGoFishQuestion(Player otherPlayer) {
         ArrayList<Card> n = new ArrayList<Card>();
     }
-    
-    public void makeMatches(){
-        /*
-        playerHand.contains(new Card(Values.valueOf(String.valueOf()),Suits.valueOf(playerID))));
-        for (int i = 0; i < playerHand.size(); i++){
-            int x = playerHand.get(i).getValue().ordinal();
-            int count = 0;
-            for (int j = 0; j < playerHand.size(); j++){
-                if (playerHand.get(j).getValue().ordinal() == x){
-                    count++;
-                }
-            }
-            if (count == 4){
-                for(int k = 0; k < playerHand.size(); k++){
-                    if (playerHand.get(k).getValue().ordinal() == x){
-                        playerHand.remove(playerHand.get(k));
-                    }
-                }
-            }
+
+    public void makeMatches() {
+        values = new int[cardHand.size()];
+        int index = 0;
+        for (Card card : cardHand) {
+            values[index++] = card.getValue().ordinal() + 1;
         }
-        */
-        /*
-        System.out.println("This is " + getPlayerID() + "'s CardHand:");
-        for (Card card : playerHand) {
-            System.out.print(card);
-        }*/
-        Suits[] suits = Suits.values();
-        Values[] values = Values.values();
-        ArrayList<Card> match = new ArrayList<>();
-        System.out.println(playerHand);
-        for (Values value : values) {
-            for (Suits suit : suits) {
-                if (playerHand.contains(new Card(value, suit)))
-                    System.out.println("contains works");
-                match.add(new Card(value,suit));
+        int temp = 0;
+        for (int value : values) {
+            ArrayList<Card> tempArrayList = new ArrayList<>();
+            for (Card card : cardHand) {
+                if (value == card.getValue().ordinal() + 1){
+                    temp++;
+                    tempArrayList.add(card);
+                }
             }
-            //System.out.println(match);
-            if (playerHand.contains(match)){
-                System.out.println("match!");
+            if (temp == 4){
                 matches++;
-                for (Suits suit : suits) {
-                    playerHand.remove(new Card(value,suit));
-                }
+                cardHand.removeAll(tempArrayList);
             }
-            
-            match.clear();
-            
-            
-            for (Card card : playerHand) {
-                //if (playerHand.subList(playerHand.indexOf(card), playerHand.));
-            }
-            
-            for (Card card : playerHand) {
-                
-            }
+            temp = 0;
+            tempArrayList.clear();
         }
-        
-        //System.out.println(match);
-        
-        /*
-        new approach:
-        create a list of 
-        */
-        
-    }//enum .values(), .equals()
-    
-    public void match(){
-        Card[] hand = (Card[]) playerHand.toArray();
-        
     }
 
     public int getMatches() {
         return matches;
+    }
+    
+    public ArrayList<Card> hasCard(Values value){
+        ArrayList<Card> returnList = new ArrayList<>();
+        for (Card card : cardHand) {
+            if (card.getValue().equals(value)){
+                returnList.add(card);
+            }
+        }
+        cardHand.removeAll(returnList);
+        return returnList;
+    }
+    
+    public void giveCards(ArrayList<Card> a){
+        cardHand.addAll(a);
+    }
+    
+    public void printCardHand(){
+        for (Card card : cardHand) {
+            System.out.println(card);
+        }
     }
 }
