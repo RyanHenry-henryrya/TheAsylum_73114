@@ -127,12 +127,11 @@ public class Game {
 
     public static void drawCards(Player player) {
         player.makeMatches();
-        player.getCardHand().sort(null);
         System.out.println(player.getPlayerID() + ", it is your turn."
                 + " You have " + player.getMatches() + " matches.");
         if (player.getCardHand().isEmpty()) {
             if (DECK.size() < 7) {
-                for (int i = 0; i < DECK.size(); i++) {
+                for (int i = 0; i <= DECK.size(); i++) {
                     player.drawCard();
                 }
                 System.out.println("You drew " + DECK.size() + " cards."
@@ -151,6 +150,15 @@ public class Game {
             System.out.println("You drew " + (7 - player.getCardHand()
                     .size()) + " cards.");
         }
+        player.makeMatches();
+        int i = 0;
+        for (Player player1 : players) {
+            i += player1.getCardHand().size();
+        }
+        if (i == 0 && DECK.size() == 0){
+            declareWinner();
+        }
+        player.getCardHand().sort(null);
     }
 
     public static void transferCards(Player player, String inputName) {
